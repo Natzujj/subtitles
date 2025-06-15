@@ -1,4 +1,4 @@
-document.getElementById("start").addEventListener("click", () => {
+document.getElementById("onlySubtitles").addEventListener("click", () => {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     if (tabs && tabs.length > 0 && tabs[0].id) {
       chrome.tabs.sendMessage(tabs[0].id, { action: "startSubtitles" })

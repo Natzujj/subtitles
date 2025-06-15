@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "name": "Real-Time Subtitles",
   "version": "1.0",
-  "description": "Exibe legendas em tempo real em inglês e francês.",
-  "permissions": ["storage", "activeTab", "scripting"],
+  "description": "Exibe legendas em tempo real do áudio da aba.",
+  "permissions": ["storage", "activeTab", "scripting", "tabCapture"],
   "action": {
     "default_popup": "popup.html"
   },
