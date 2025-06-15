@@ -36,7 +36,7 @@ function removerLegenda() {
     }
 }
 
-function iniciarReconhecimento() {
+function iniciarReconhecimento(lang = "fr-FR") {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
@@ -45,7 +45,7 @@ function iniciarReconhecimento() {
     }
 
     recognition = new SpeechRecognition();
-    recognition.lang = "en-US"; // Pode mudar para "fr-FR" pra francês
+    recognition.lang = lang; 
     recognition.continuous = true;
     recognition.interimResults = true;
 
@@ -74,7 +74,7 @@ function iniciarReconhecimento() {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "startSubtitles") {
         criarLegenda();
-        iniciarReconhecimento();
+        iniciarReconhecimento(request.lang || "fr-FR");
         sendResponse({ status: "Legenda iniciada" });
     }
 
@@ -85,7 +85,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     if (request.action === "onlySubtitles") {
         criarLegenda();
-        iniciarReconhecimento();
+        iniciarReconhecimento(request.lang || "fr-FR");
         sendResponse({ status: "Legenda simples iniciada" });
     }
 });
