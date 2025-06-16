@@ -5,6 +5,9 @@ let legendaDiv;
 let isDragging = false;
 let dragOffsetX, dragOffsetY;
 
+let currentFinalTextForPage = "";
+const MAX_CHARS_PER_PAGE = 100;
+
 function criarLegenda() {
     if (legendaDiv) return;
 
@@ -20,21 +23,22 @@ function criarLegenda() {
     legendaDiv.style.fontSize = "18px";
     legendaDiv.style.borderRadius = "10px";
     legendaDiv.style.zIndex = "9999";
-    legendaDiv.style.maxWidth = "90%";
+    legendaDiv.style.maxWidth = "70%";
     legendaDiv.style.textAlign = "center";
     legendaDiv.style.cursor = "grab";
 
     document.body.appendChild(legendaDiv);
+    currentFinalTextForPage = "";
 
     legendaDiv.addEventListener('mousedown', onDragMouseDown);
 }
 
 function removerLegenda() {
     if (legendaDiv) {
-        legendaDiv.removeEventListener('mousedown', onDragMouseDown); 
-        document.removeEventListener('mousemove', onDragMouseMove); 
-        document.removeEventListener('mouseup', onDragMouseUp);  
-        isDragging = false; 
+        legendaDiv.removeEventListener('mousedown', onDragMouseDown);
+        document.removeEventListener('mousemove', onDragMouseMove);
+        document.removeEventListener('mouseup', onDragMouseUp);
+        isDragging = false;
         legendaDiv.remove();
         legendaDiv = null;
     }
@@ -54,17 +58,26 @@ function iniciarReconhecimento(lang = "fr-FR") {
     }
 
     recognition = new SpeechRecognition();
-    recognition.lang = lang; 
+    recognition.lang = lang;
     recognition.continuous = true;
     recognition.interimResults = true;
 
     recognition.onresult = (event) => {
-        let texto = "";
+        let accumulated_interim_for_this_event = "";
         for (let i = event.resultIndex; i < event.results.length; i++) {
-            texto += event.results[i][0].transcript;
+            const transcript = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+                atualizarTextoFinal(transcript);
+            } else {
+                accumulated_interim_for_this_event += transcript;
+            }
         }
-        legendaDiv.innerText = texto;
+
+        if (accumulated_interim_for_this_event && legendaDiv) {
+            legendaDiv.innerText = currentFinalTextForPage + accumulated_interim_for_this_event;
+        }
     };
+
 
     recognition.onerror = (event) => {
         console.error("Erro no reconhecimento:", event.error);
@@ -73,12 +86,24 @@ function iniciarReconhecimento(lang = "fr-FR") {
 
     recognition.onend = () => {
         console.log("Reconhecimento de voz encerrado.");
-        // Opcional: reinicia
-        recognition.start();
     };
 
     recognition.start();
 }
+
+function atualizarTextoFinal(transcript) {
+    const proximoTexto = currentFinalTextForPage + transcript;
+
+    if (currentFinalTextForPage.length === 0 || (proximoTexto.length > MAX_CHARS_PER_PAGE && currentFinalTextForPage.length > 0)) {
+        currentFinalTextForPage = transcript;
+    } else {
+        currentFinalTextForPage = transcript;
+    }
+    if (legendaDiv) {
+        legendaDiv.innerText = currentFinalTextForPage;
+    }
+}
+
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "startSubtitles") {
@@ -109,14 +134,14 @@ function onDragMouseDown(e) {
 
     legendaDiv.style.left = rect.left + 'px';
     legendaDiv.style.top = rect.top + 'px';
-    legendaDiv.style.bottom = 'auto'; 
-    legendaDiv.style.transform = 'none'; 
+    legendaDiv.style.bottom = 'auto';
+    legendaDiv.style.transform = 'none';
 
     dragOffsetX = e.clientX - rect.left;
     dragOffsetY = e.clientY - rect.top;
 
-    legendaDiv.style.cursor = 'grabbing'; 
-    e.preventDefault(); 
+    legendaDiv.style.cursor = 'grabbing';
+    e.preventDefault();
 
     document.addEventListener('mousemove', onDragMouseMove);
     document.addEventListener('mouseup', onDragMouseUp);
@@ -145,7 +170,7 @@ function onDragMouseMove(e) {
 function onDragMouseUp() {
     if (!isDragging) return;
     isDragging = false;
-    legendaDiv.style.cursor = 'grab'; 
+    legendaDiv.style.cursor = 'grab';
     document.removeEventListener('mousemove', onDragMouseMove);
     document.removeEventListener('mouseup', onDragMouseUp);
 }
