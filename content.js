@@ -160,15 +160,12 @@ function iniciarReconhecimentoComTraducao(lang, fromLang, toLang) {
 
         transcriptAtual = novoTranscript.trim();
 
-        // Atualiza o texto enquanto o usuário fala
         if (legendaDiv) {
             legendaDiv.innerText = transcriptAtual;
         }
 
-        // Se já tiver um timer rodando, cancela
         if (timeoutVerificacao) clearTimeout(timeoutVerificacao);
 
-        // Inicia novo timer
         timeoutVerificacao = setTimeout(async () => {
             const palavrasNovas = contarPalavrasDiferentes(ultimoTextoCapturado, transcriptAtual);
 
