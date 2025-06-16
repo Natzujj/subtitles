@@ -1,116 +1,119 @@
-![Banner do projeto](./Banner.png)
+![Project Banner](./Banner.png)
 
-# 🎙️ Close Captioner
+## 🇺🇸 [Read this in Portuguese](./README.pt-br.md)
 
-**Uma extensão simples para gerar legendas automáticas com reconhecimento de voz — ideal para vídeos, estudos de idiomas, transmissões ao vivo (lives) e muito mais.**
+# 🎙️ Close Captioner 🎙️
 
----
-
-## 🧠 Por que esse projeto existe?
-
-Enquanto aprendia novos idiomas, percebi a **ausência de uma ferramenta leve e funcional para gerar legendas em tempo real**, especialmente em vídeos e lives que não tinham legendas embutidas.
-
-⚠️ **Não encontrei nenhuma solução simples, gratuita e funcional para esse caso específico**, então criei esta extensão para:
-
-- Capturar áudio do sistema (ou do microfone)
-- Transcrever em tempo real usando reconhecimento de voz
-- Mostrar as legendas diretamente na tela
-- Permitir a tradução automática se desejado
+**A simple browser extension for real-time speech recognition subtitles — perfect for videos, language learning, livestreams, and more.**
 
 ---
 
-## 🧰 Tecnologias usadas
+## Why does this project exist?
 
-- **HTML + CSS + JavaScript**: Extensão leve, toda feita em código puro (Vanilla JS)
-- **Web Speech API (Reconhecimento de voz)**: Nativa em navegadores Chromium
-- **VB-CABLE**: Para redirecionar o áudio do sistema como se fosse um microfone
+While learning new languages, I noticed the **lack of a lightweight, functional tool for generating live subtitles**, especially for videos and livestreams that don't offer captions.
 
----
+**I couldn’t find a simple, free, and reliable solution for this specific use case**, so I created this extension to:
 
-## 🖥️ Requisitos
-
-### 🎧 1. Capturar áudio do sistema
-
-Por padrão, o navegador só acessa **microfones**, não o som que sai do seu computador. Para resolver isso:
-
-> 🔧 Instale o [VB-CABLE](https://vb-audio.com/Cable/)
-
-Esse driver cria um **microfone virtual** que você pode configurar como entrada. Assim:
-
-1. O som do sistema (como o som do vídeo ou live) vai para esse "microfone virtual"
-2. O navegador escuta esse microfone e gera a legenda
+- Capture system audio (or microphone input)  
+- Transcribe it in real time using speech recognition  
+- Display subtitles directly on screen  
+- Optionally offer automatic translation  
 
 ---
 
-## 🚀 Como usar
+## Technologies Used
 
-### 1. Instale o [VB-CABLE](https://vb-audio.com/Cable/)
-- Siga o instalador
-- Vá em **Configurações de Som** e defina:
-  - Saída padrão: `VB-Cable Input`
-  - Entrada padrão: `VB-Cable Output`
-
-⚠️ Isso faz o som do sistema ser redirecionado como microfone.
+- **HTML + CSS + JavaScript** — Lightweight extension built with plain Vanilla JS  
+- **Web Speech API** — Native in Chromium browsers for speech recognition  
+- **VB-CABLE** — Routes system audio as microphone input  
 
 ---
 
-### 2. Instale a extensão no Chrome (modo desenvolvedor)
+## 🖥️ Requirements 🖥️
 
-1. Acesse `chrome://extensions/`
-2. Ative o **Modo do desenvolvedor** (canto superior direito)
-3. Clique em **"Carregar sem compactação"**
-4. Selecione a pasta do projeto
+### 1. Capture System Audio
 
----
+By default, browsers can only access **microphones**, not system audio. To work around this:
 
-### 3. Use a extensão
+- Install [VB-CABLE](https://vb-audio.com/Cable/)
 
-- Abra o popup da extensão
-- Selecione o idioma de entrada
-- Clique em:
-  - `Apenas Legenda`: Só transcreve o áudio
-  - `Tradução`: Transcreve e traduz
-  - `Parar`: Para a escuta
+This driver creates a **virtual microphone**. Here's how it works:
+
+1. System audio (e.g., video or livestream sound) is redirected into this virtual mic  
+2. The browser listens to the mic and generates subtitles  
 
 ---
 
-## 🌍 Idiomas suportados
+## How to Use
 
-- 🇺🇸 Inglês (en-US)
-- 🇫🇷 Francês (fr-FR)
-- 🇧🇷 Português (pt-BR)
-- 🇪🇸 Espanhol (es-ES)
+### 1. Install [VB-CABLE](https://vb-audio.com/Cable/)
 
-⚠️ Você pode adicionar mais idiomas facilmente modificando o seletor `<select>` no HTML.
+- Run the installer  
+- Go to your **Sound Settings** and set:  
+  - Default output: `VB-Cable Input`  
+  - Default input: `VB-Cable Output`
 
----
-
-## 🧪 Exemplos de uso
-
-- Assistir vídeos estrangeiros sem legenda
-- Praticar listening enquanto estuda idiomas
-- Adicionar legendas automáticas em **lives** ou **aulas**
-- Acessibilidade: ajudar pessoas com deficiência auditiva
+This reroutes system audio as microphone input.
 
 ---
 
-## 📦 Estrutura do Projeto
+### 2. Install the Extension in Chrome (Developer Mode)
+
+1. Go to `chrome://extensions/`  
+2. Enable **Developer Mode** (top-right corner)  
+3. Click **“Load unpacked”**  
+4. Select the project folder  
+
+---
+
+### 3. Use the Extension
+
+- Open the extension popup  
+- Choose the input language  
+- Click:  
+  - `Only Subtitles` — Only transcribes audio  
+  - `Translate` — Transcribes and translates  
+  - `Stop` — Stops listening  
+
+---
+
+## Supported Languages
+
+- 🇺🇸 English (`en-US`)  
+- 🇫🇷 French (`fr-FR`)  
+- 🇧🇷 Portuguese (`pt-BR`)  
+- 🇪🇸 Spanish (`es-ES`)
+
+You can easily add more languages by editing the `<select>` element in `popup.html`.
+
+---
+
+## Use Cases
+
+- Watch foreign videos without subtitles  
+- Practice listening comprehension while studying languages  
+- Add real-time subtitles to **livestreams** or **online classes**  
+- Improve accessibility for users with hearing impairments  
+
+---
+
+## Project Structure
 
 ```plaintext
 subtitles-extension/
-├── popup.html        # Interface do popup
-├── popup.js          # Lógica de reconhecimento de voz e tradução
-├── icon.png          # Ícone da extensão
-├── manifest.json     # Manifesto da extensão Chrome
+├── popup.html        # Popup interface
+├── popup.js          # Speech recognition and translation logic
+├── icon.png          # Extension icon
+├── manifest.json     # Chrome extension manifest
 ```
 
 ---
 
-## ⚠️ Limitações
+## Limitations
 
-- Depende do reconhecimento de voz da Web Speech API (pode ter pequenas falhas)
-- Tradução automática usa `SpeechRecognition.lang` e `Intl` (sem APIs externas)
-- Não grava o áudio, apenas transcreve e exibe
-- Chrome é o navegador recomendado
+- Depends on the Web Speech API for speech recognition (may have occasional misinterpretations)
+- Translation uses built-in browser features `SpeechRecognition.lang, Intl` — no external APIs
+- Does **not** record audio — only transcribes and displays subtitles
+- Chrome is the recommended browser
 
 ---

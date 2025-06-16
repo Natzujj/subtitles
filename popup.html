@@ -6,146 +6,25 @@
     <title>Subtitles</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="styles/style.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
         rel="stylesheet">
-
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        html, body {
-            background-color: transparent;
-            border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0f2f5;
-            padding: 20px;
-            width: 250px;
-            color: #2c3e50;
-        }
-
-        h3 {
-            margin-top: 0;
-            font-size: 16px;
-            text-align: center;
-            font-weight: 600;
-            color: #1a1a1a;
-        }
-
-        button {
-            background-color: #ffffff;
-            color: #1a1a1a;
-            border: 1px solid #d1d1d1;
-            padding: 10px;
-            margin-top: 10px;
-            width: 100%;
-            font-size: 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-        }
-
-        button:hover {
-            background-color: #f5f5f5;
-            border-color: #bcbcbc;
-        }
-
-        button:active {
-            transform: scale(0.98);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-
-        #stop {
-            color: #ff4d4f;
-            border: 1px solid #ff4d4f;
-            background-color: #fff;
-        }
-
-        #stop:hover {
-            background-color: #ffeaea;
-        }
-
-        #onlySubtitles {
-            color: #00796b;
-            border: 1px solid #00796b;
-        }
-
-        #onlySubtitles:hover {
-            background-color: #e0f2f1;
-        }
-
-        #start {
-            color: #3f51b5;
-            border: 1px solid #3f51b5;
-        }
-
-        #start:hover {
-            background-color: #e8eaf6;
-        }
-
-        .config-container {
-            position: relative;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        #toggleConfig {
-            background-color: #f9f9f9;
-            border: 1px solid #d1d1d1;
-            border-radius: 50%;
-            padding: 10px;
-            width: 40px;
-            height: 40px;
-            font-size: 18px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #toggleConfig:hover {
-            background-color: #eaeaea;
-        }
-
-        #langSelect {
-            margin-top: 10px;
-            padding: 8px;
-            width: 100%;
-            font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-
-        .hidden {
-            display: none;
-        }
-    </style>
 </head>
 
 <body>
     <h3>Close Captioner</h3>
-
-    <button id="onlySubtitles">Apenas Legenda</button>
-    <button id="start">Legenda + Tradução</button>
-    <button id="stop">Parar</button>
+    <button id="onlySubtitles">Add Subtitles</button>
+    <button id="start">Translation</button>
+    <button id="stop">Stop</button>
 
     <div class="config-container">
-        <button id="toggleConfig">⚙️</button>
+        <button id="toggleConfig"></button>
         <select id="langSelect" class="hidden">
-            <option value="en-US">Inglês (US)</option>
-            <option value="fr-FR">Francês (FR)</option>
-            <option value="pt-BR">Português (BR)</option>
-            <option value="es-ES">Espanhol (ES)</option>
+            <option value="en-US">English (US)</option>
+            <option value="fr-FR">French (FR)</option>
+            <option value="pt-BR">Portuguese (BR)</option>
+            <option value="es-ES">Spanish (ES)</option>
         </select>
     </div>
 
