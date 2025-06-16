@@ -2,6 +2,8 @@ console.log("Content script carregado!");
 
 let recognition;
 let legendaDiv;
+let isDragging = false;
+let dragOffsetX, dragOffsetY;
 
 function criarLegenda() {
     if (legendaDiv) return;
@@ -20,12 +22,19 @@ function criarLegenda() {
     legendaDiv.style.zIndex = "9999";
     legendaDiv.style.maxWidth = "90%";
     legendaDiv.style.textAlign = "center";
+    legendaDiv.style.cursor = "grab";
 
     document.body.appendChild(legendaDiv);
+
+    legendaDiv.addEventListener('mousedown', onDragMouseDown);
 }
 
 function removerLegenda() {
     if (legendaDiv) {
+        legendaDiv.removeEventListener('mousedown', onDragMouseDown); 
+        document.removeEventListener('mousemove', onDragMouseMove); 
+        document.removeEventListener('mouseup', onDragMouseUp);  
+        isDragging = false; 
         legendaDiv.remove();
         legendaDiv = null;
     }
@@ -89,3 +98,54 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         sendResponse({ status: "Legenda simples iniciada" });
     }
 });
+
+// GRAB AND DRAG FUNCTIONALITY
+function onDragMouseDown(e) {
+    if (e.button !== 0) return;
+
+    isDragging = true;
+
+    const rect = legendaDiv.getBoundingClientRect();
+
+    legendaDiv.style.left = rect.left + 'px';
+    legendaDiv.style.top = rect.top + 'px';
+    legendaDiv.style.bottom = 'auto'; 
+    legendaDiv.style.transform = 'none'; 
+
+    dragOffsetX = e.clientX - rect.left;
+    dragOffsetY = e.clientY - rect.top;
+
+    legendaDiv.style.cursor = 'grabbing'; 
+    e.preventDefault(); 
+
+    document.addEventListener('mousemove', onDragMouseMove);
+    document.addEventListener('mouseup', onDragMouseUp);
+}
+
+function onDragMouseMove(e) {
+    if (!isDragging) return;
+
+    let newLeft = e.clientX - dragOffsetX;
+    let newTop = e.clientY - dragOffsetY;
+
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const divWidth = legendaDiv.offsetWidth;
+    const divHeight = legendaDiv.offsetHeight;
+
+    if (newLeft < 0) newLeft = 0;
+    if (newTop < 0) newTop = 0;
+    if (newLeft + divWidth > viewportWidth) newLeft = viewportWidth - divWidth;
+    if (newTop + divHeight > viewportHeight) newTop = viewportHeight - divHeight;
+
+    legendaDiv.style.left = newLeft + 'px';
+    legendaDiv.style.top = newTop + 'px';
+}
+
+function onDragMouseUp() {
+    if (!isDragging) return;
+    isDragging = false;
+    legendaDiv.style.cursor = 'grab'; 
+    document.removeEventListener('mousemove', onDragMouseMove);
+    document.removeEventListener('mouseup', onDragMouseUp);
+}
