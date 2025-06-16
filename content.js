@@ -8,6 +8,14 @@ let dragOffsetX, dragOffsetY;
 let currentFinalTextForPage = "";
 const MAX_CHARS_PER_PAGE = 100;
 
+let ultimoTextoCapturado = "";
+let timeoutVerificacao;
+const INTERVALO_ANALISE = 2000; 
+const MIN_PALAVRAS = 5;
+
+const translateApiUrl = "https://deep-translate1.p.rapidapi.com/language/translate/v2";
+const apiKey = "your_api_key_here"; 
+
 function criarLegenda() {
     if (legendaDiv) return;
 
@@ -104,12 +112,108 @@ function atualizarTextoFinal(transcript) {
     }
 }
 
+async function traduzirTexto(texto, de = "fr", para = "pt") {
+    try {
+        const response = await fetch(translateApiUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "x-rapidapi-key": apiKey,
+                "x-rapidapi-host": "deep-translate1.p.rapidapi.com"
+            },
+            body: JSON.stringify({
+                q: texto,
+                source: de,
+                target: para
+            })
+        });
+
+        const data = await response.json();
+        return data.data.translations.translatedText;
+    } catch (err) {
+        console.error("Erro na tradução:", err);
+        return "[Erro na tradução]";
+    }
+}
+
+function iniciarReconhecimentoComTraducao(lang, fromLang, toLang) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+        legendaDiv.innerText = "SpeechRecognition não suportado neste navegador.";
+        return;
+    }
+
+    recognition = new SpeechRecognition();
+    recognition.lang = lang;
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    let transcriptAtual = "";
+
+    recognition.onresult = (event) => {
+        let novoTranscript = "";
+
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            novoTranscript += event.results[i][0].transcript;
+        }
+
+        transcriptAtual = novoTranscript.trim();
+
+        // Atualiza o texto enquanto o usuário fala
+        if (legendaDiv) {
+            legendaDiv.innerText = transcriptAtual;
+        }
+
+        // Se já tiver um timer rodando, cancela
+        if (timeoutVerificacao) clearTimeout(timeoutVerificacao);
+
+        // Inicia novo timer
+        timeoutVerificacao = setTimeout(async () => {
+            const palavrasNovas = contarPalavrasDiferentes(ultimoTextoCapturado, transcriptAtual);
+
+            if (palavrasNovas >= MIN_PALAVRAS) {
+                const traducao = await traduzirTexto(transcriptAtual, fromLang, toLang);
+                atualizarTextoFinal(traducao);
+                ultimoTextoCapturado = transcriptAtual;
+            }
+        }, INTERVALO_ANALISE);
+    };
+
+    recognition.onerror = (event) => {
+        console.error("Erro no reconhecimento:", event.error);
+        legendaDiv.innerText = "Erro no reconhecimento: " + event.error;
+    };
+
+    recognition.start();
+}
+
+function contarPalavrasDiferentes(texto1, texto2) {
+    const palavras1 = texto1.split(/\s+/);
+    const palavras2 = texto2.split(/\s+/);
+
+    let contador = 0;
+
+    for (let i = 0; i < palavras2.length; i++) {
+        if (palavras1[i] !== palavras2[i]) {
+            contador++;
+        }
+    }
+
+    return contador;
+}
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === "startSubtitles") {
+    if (request.action === "onlySubtitles") {
         criarLegenda();
         iniciarReconhecimento(request.lang || "fr-FR");
-        sendResponse({ status: "Legenda iniciada" });
+        sendResponse({ status: "Legenda simples iniciada" });
+    }
+
+    if (request.action === "startTranslation") {
+        criarLegenda();
+        iniciarReconhecimentoComTraducao(request.lang || "fr-FR");
+        sendResponse({ status: "Tradução iniciada" });
     }
 
     if (request.action === "stopSubtitles") {
@@ -117,11 +221,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         sendResponse({ status: "Legenda parada" });
     }
 
-    if (request.action === "onlySubtitles") {
-        criarLegenda();
-        iniciarReconhecimento(request.lang || "fr-FR");
-        sendResponse({ status: "Legenda simples iniciada" });
-    }
 });
 
 // GRAB AND DRAG FUNCTIONALITY

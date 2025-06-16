@@ -16,6 +16,27 @@ document.getElementById("onlySubtitles").addEventListener("click", () => {
   });
 });
 
+document.getElementById("translation").addEventListener("click", () => {
+  const lang = document.getElementById("langSelect").value;
+  const fromLang = lang.split("-")[0]; // ex: "fr" de "fr-FR"
+  const toLang = "pt"; // você pode deixar isso dinâmico se quiser
+
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    if (tabs && tabs.length > 0 && tabs[0].id) {
+      chrome.tabs.sendMessage(tabs[0].id, {
+        action: "startTranslation",
+        lang: lang,
+        translateFrom: fromLang,
+        translateTo: toLang
+      }).then(response => {
+        console.log("Tradução iniciada:", response);
+      }).catch(error => {
+        console.error("Erro ao iniciar tradução:", error.message);
+      });
+    }
+  });
+});
+
 document.getElementById("stop").addEventListener("click", () => {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     if (tabs && tabs.length > 0 && tabs[0].id) {
