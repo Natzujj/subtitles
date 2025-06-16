@@ -1,6 +1,6 @@
 ![Banner do projeto](./Banner.png)
 
-# 🎙️ Subtitles Assistant
+# 🎙️ Close Captioner
 
 **Uma extensão simples para gerar legendas automáticas com reconhecimento de voz — ideal para vídeos, estudos de idiomas, transmissões ao vivo (lives) e muito mais.**
 
