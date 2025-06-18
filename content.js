@@ -14,7 +14,7 @@ const INTERVALO_ANALISE = 2000;
 const MIN_PALAVRAS = 5;
 
 const translateApiUrl = "https://deep-translate1.p.rapidapi.com/language/translate/v2";
-const apiKey = "e88bdbe878msh319a95ff2cb1f55p1d4a6fjsnb6c9e7d01338";
+const apiKey = "your api key here"; 
 
 function criarLegenda() {
     if (legendaDiv) return;
@@ -308,21 +308,21 @@ function criarCaixaHistorico() {
     legendaDiv.style.left = "10%";
     legendaDiv.style.width = "420px";
     legendaDiv.style.height = "320px";
-    legendaDiv.style.background = "#121212"; // fundo escuro puro pra contraste forte
-    legendaDiv.style.color = "#e0e0e0"; // texto clarinho para legibilidade
+    legendaDiv.style.background = "#121212";
+    legendaDiv.style.color = "#e0e0e0"; 
     legendaDiv.style.borderRadius = "12px";
     legendaDiv.style.zIndex = "9999";
     legendaDiv.style.resize = "both";
     legendaDiv.style.overflow = "hidden";
     legendaDiv.style.display = "flex";
     legendaDiv.style.flexDirection = "column";
-    legendaDiv.style.boxShadow = "0 8px 24px rgba(0,0,0,0.6)"; // sombra mais elegante
+    legendaDiv.style.boxShadow = "0 8px 24px rgba(0,0,0,0.6)"; 
     legendaDiv.style.fontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
-    legendaDiv.style.userSelect = "text"; // permite selecionar o texto dentro do histórico
+    legendaDiv.style.userSelect = "text";
 
     // HEADER
     const header = document.createElement("div");
-    header.style.background = "linear-gradient(90deg, #3f51b5, #5a67d8)"; // degradê azul moderno
+    header.style.background = "linear-gradient(90deg, #3f51b5, #5a67d8)"; 
     header.style.padding = "10px 16px";
     header.style.cursor = "grab";
     header.style.display = "flex";
@@ -335,13 +335,12 @@ function criarCaixaHistorico() {
     header.style.boxShadow = "0 2px 8px rgba(0,0,0,0.3)";
 
     const title = document.createElement("span");
-    title.innerText = "Histórico de Legendas";
+    title.innerText = "Subtitle History";
     title.style.fontWeight = "700";
     title.style.fontSize = "16px";
     title.style.color = "#fff";
     title.style.userSelect = "none";
 
-    // Botões estilizados, menores e com hover mais suave
     function styleButton(btn) {
         btn.style.background = "transparent";
         btn.style.border = "none";
@@ -368,7 +367,7 @@ function criarCaixaHistorico() {
     closeBtn.onclick = () => removerLegenda();
 
     header.appendChild(title);
-    // agrupando botões para alinhar melhor no header
+
     const btnGroup = document.createElement("div");
     btnGroup.style.display = "flex";
     btnGroup.appendChild(clearBtn);
@@ -385,7 +384,7 @@ function criarCaixaHistorico() {
     content.style.cursor = "text";
     content.style.fontSize = "14px";
     content.style.lineHeight = "1.4";
-    content.style.whiteSpace = "pre-wrap"; // mantém quebras de linha
+    content.style.whiteSpace = "pre-wrap"; 
 
     legendaDiv.appendChild(header);
     legendaDiv.appendChild(content);
