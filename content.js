@@ -10,11 +10,11 @@ const MAX_CHARS_PER_PAGE = 100;
 
 let ultimoTextoCapturado = "";
 let timeoutVerificacao;
-const INTERVALO_ANALISE = 2000; 
+const INTERVALO_ANALISE = 2000;
 const MIN_PALAVRAS = 5;
 
 const translateApiUrl = "https://deep-translate1.p.rapidapi.com/language/translate/v2";
-const apiKey = "your_api_key_here"; 
+const apiKey = "e88bdbe878msh319a95ff2cb1f55p1d4a6fjsnb6c9e7d01338";
 
 function criarLegenda() {
     if (legendaDiv) return;
@@ -81,8 +81,9 @@ function iniciarReconhecimento(lang = "fr-FR") {
             }
         }
 
-        if (accumulated_interim_for_this_event && legendaDiv) {
-            legendaDiv.innerText = currentFinalTextForPage + accumulated_interim_for_this_event;
+        const contentDiv = document.getElementById("conteudoLegenda");
+        if (contentDiv) {
+            contentDiv.innerText = currentFinalTextForPage + accumulated_interim_for_this_event;
         }
     };
 
@@ -100,17 +101,22 @@ function iniciarReconhecimento(lang = "fr-FR") {
 }
 
 function atualizarTextoFinal(transcript) {
-    const proximoTexto = currentFinalTextForPage + transcript;
+    chrome.storage.sync.get(['historyMode'], (result) => {
+        const historyEnabled = result.historyMode;
 
-    if (currentFinalTextForPage.length === 0 || (proximoTexto.length > MAX_CHARS_PER_PAGE && currentFinalTextForPage.length > 0)) {
-        currentFinalTextForPage = transcript;
-    } else {
-        currentFinalTextForPage = transcript;
-    }
-    if (legendaDiv) {
-        legendaDiv.innerText = currentFinalTextForPage;
-    }
+        if (historyEnabled) {
+            currentFinalTextForPage += transcript + " ";
+        } else {
+            currentFinalTextForPage = transcript;
+        }
+
+        const contentDiv = document.getElementById("conteudoLegenda");
+        if (contentDiv) {
+            contentDiv.innerText = currentFinalTextForPage;
+        }
+    });
 }
+
 
 async function traduzirTexto(texto, de = "fr", para = "pt") {
     try {
@@ -201,24 +207,38 @@ function contarPalavrasDiferentes(texto1, texto2) {
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === "onlySubtitles") {
-        criarLegenda();
-        iniciarReconhecimento(request.lang || "fr-FR");
-        sendResponse({ status: "Legenda simples iniciada" });
-    }
+    chrome.storage.sync.get(['historyMode'], (result) => {
+        const historyEnabled = result.historyMode;
 
-    if (request.action === "startTranslation") {
-        criarLegenda();
-        iniciarReconhecimentoComTraducao(request.lang || "fr-FR");
-        sendResponse({ status: "Tradução iniciada" });
-    }
+        if (request.action === "onlySubtitles") {
+            if (historyEnabled) {
+                criarCaixaHistorico();
+            } else {
+                criarLegenda();
+            }
+            iniciarReconhecimento(request.lang || "fr-FR");
+            sendResponse({ status: "Legenda iniciada" });
+        }
 
-    if (request.action === "stopSubtitles") {
-        removerLegenda();
-        sendResponse({ status: "Legenda parada" });
-    }
+        if (request.action === "startTranslation") {
+            if (historyEnabled) {
+                criarCaixaHistorico();
+            } else {
+                criarLegenda();
+            }
+            iniciarReconhecimentoComTraducao(request.lang || "fr-FR", request.translateFrom, request.translateTo);
+            sendResponse({ status: "Tradução iniciada" });
+        }
 
+        if (request.action === "stopSubtitles") {
+            removerLegenda();
+            sendResponse({ status: "Legenda parada" });
+        }
+    });
+
+    return true;
 });
+
 
 // GRAB AND DRAG FUNCTIONALITY
 function onDragMouseDown(e) {
@@ -270,3 +290,86 @@ function onDragMouseUp() {
     document.removeEventListener('mousemove', onDragMouseMove);
     document.removeEventListener('mouseup', onDragMouseUp);
 }
+
+function limparHistorico() {
+    const contentDiv = document.getElementById("conteudoLegenda");
+    if (contentDiv) {
+        contentDiv.innerText = "";
+    }
+    currentFinalTextForPage = "";
+}
+
+function criarCaixaHistorico() {
+    if (legendaDiv) return;
+
+    legendaDiv = document.createElement("div");
+    legendaDiv.style.position = "fixed";
+    legendaDiv.style.top = "10%";
+    legendaDiv.style.left = "10%";
+    legendaDiv.style.width = "400px";
+    legendaDiv.style.height = "300px";
+    legendaDiv.style.background = "rgba(0, 0, 0, 0.6)";
+    legendaDiv.style.color = "#fff";
+    legendaDiv.style.borderRadius = "8px";
+    legendaDiv.style.zIndex = "9999";
+    legendaDiv.style.resize = "both";
+    legendaDiv.style.overflow = "hidden"; 
+    legendaDiv.style.display = "flex";
+    legendaDiv.style.flexDirection = "column"; 
+    legendaDiv.style.boxSizing = "border-box";
+
+    // HEADER
+    const header = document.createElement("div");
+    header.style.background = "rgba(0, 0, 0, 0.8)";
+    header.style.padding = "8px 12px";
+    header.style.cursor = "grab";
+    header.style.display = "flex";
+    header.style.justifyContent = "space-between";
+    header.style.alignItems = "center";
+    header.style.flexShrink = "0"; 
+    header.style.userSelect = "none";
+
+    const title = document.createElement("span");
+    title.innerText = "Histórico de Legendas";
+
+    const closeBtn = document.createElement("button");
+    closeBtn.innerText = "X";
+    closeBtn.style.background = "transparent";
+    closeBtn.style.border = "none";
+    closeBtn.style.color = "white";
+    closeBtn.style.fontWeight = "bold";
+    closeBtn.style.cursor = "pointer";
+    closeBtn.onclick = () => removerLegenda();
+
+    const clearBtn = document.createElement("button");
+    clearBtn.innerText = "🧹";
+    clearBtn.title = "Limpar histórico";
+    clearBtn.style.background = "transparent";
+    clearBtn.style.border = "none";
+    clearBtn.style.color = "white";
+    clearBtn.style.fontWeight = "bold";
+    clearBtn.style.cursor = "pointer";
+    clearBtn.onclick = () => limparHistorico();
+
+    
+    
+    header.appendChild(title);
+    header.appendChild(clearBtn);
+    header.appendChild(closeBtn);
+
+    // CONTEÚDO
+    const content = document.createElement("div");
+    content.id = "conteudoLegenda";
+    content.style.padding = "10px";
+    content.style.overflowY = "auto";
+    content.style.flexGrow = "1";
+    content.style.cursor = "default";
+
+    legendaDiv.appendChild(header);
+    legendaDiv.appendChild(content);
+    document.body.appendChild(legendaDiv);
+
+    header.addEventListener('mousedown', onDragMouseDown);
+}
+
+

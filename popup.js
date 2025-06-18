@@ -57,3 +57,11 @@ document.getElementById("toggleConfig").addEventListener("click", () => {
   const select = document.getElementById("langSelect");
   select.classList.toggle("hidden");
 });
+
+document.getElementById("toggleHistory").addEventListener("change", (e) => {
+  const isEnabled = e.target.checked;
+
+  chrome.storage.sync.set({ historyMode: isEnabled }, () => {
+    console.log("Histórico ativado?", isEnabled);
+  });
+});
