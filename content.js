@@ -14,7 +14,7 @@ const INTERVALO_ANALISE = 2000;
 const MIN_PALAVRAS = 5;
 
 const translateApiUrl = "https://deep-translate1.p.rapidapi.com/language/translate/v2";
-const apiKey = "your api key here"; 
+const apiKey = "your api key here";
 
 function criarLegenda() {
     if (legendaDiv) return;
@@ -142,6 +142,57 @@ async function traduzirTexto(texto, de = "fr", para = "pt") {
     }
 }
 
+// function iniciarReconhecimentoComTraducao(lang, fromLang, toLang) {
+//     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+//     if (!SpeechRecognition) {
+//         legendaDiv.innerText = "SpeechRecognition não suportado neste navegador.";
+//         return;
+//     }
+
+//     recognition = new SpeechRecognition();
+//     recognition.lang = lang;
+//     recognition.continuous = true;
+//     recognition.interimResults = true;
+
+//     let transcriptAtual = "";
+
+//     recognition.onresult = (event) => {
+//         let novoTranscript = "";
+
+//         for (let i = event.resultIndex; i < event.results.length; i++) {
+//             novoTranscript += event.results[i][0].transcript;
+//         }
+
+//         transcriptAtual = novoTranscript.trim();
+
+//         const contentDiv = document.getElementById("conteudoLegenda");
+//         if (contentDiv) {
+//             contentDiv.innerText = transcriptAtual;
+//         }
+
+
+//         if (timeoutVerificacao) clearTimeout(timeoutVerificacao);
+
+//         timeoutVerificacao = setTimeout(async () => {
+//             const palavrasNovas = contarPalavrasDiferentes(ultimoTextoCapturado, transcriptAtual);
+
+//             if (palavrasNovas >= MIN_PALAVRAS) {
+//                 const traducao = await traduzirTexto(transcriptAtual, fromLang, toLang);
+//                 atualizarTextoFinal(traducao);
+//                 ultimoTextoCapturado = transcriptAtual;
+//             }
+//         }, INTERVALO_ANALISE);
+//     };
+
+//     recognition.onerror = (event) => {
+//         console.error("Erro no reconhecimento:", event.error);
+//         legendaDiv.innerText = "Erro no reconhecimento: " + event.error;
+//     };
+
+//     recognition.start();
+// }
+
 function iniciarReconhecimentoComTraducao(lang, fromLang, toLang) {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -156,6 +207,7 @@ function iniciarReconhecimentoComTraducao(lang, fromLang, toLang) {
     recognition.interimResults = true;
 
     let transcriptAtual = "";
+    let textoIntermediarioDiv = null;
 
     recognition.onresult = (event) => {
         let novoTranscript = "";
@@ -166,9 +218,26 @@ function iniciarReconhecimentoComTraducao(lang, fromLang, toLang) {
 
         transcriptAtual = novoTranscript.trim();
 
-        if (legendaDiv) {
-            legendaDiv.innerText = transcriptAtual;
-        }
+        chrome.storage.sync.get(['historyMode'], (result) => {
+            const historyEnabled = result.historyMode;
+            const contentDiv = document.getElementById("conteudoLegenda");
+
+            if (historyEnabled && contentDiv) {
+                
+                if (textoIntermediarioDiv && textoIntermediarioDiv.parentElement) {
+                    contentDiv.removeChild(textoIntermediarioDiv);
+                }
+                textoIntermediarioDiv = document.createElement("div");
+                textoIntermediarioDiv.innerText = transcriptAtual;
+                textoIntermediarioDiv.style.color = "#90caf9"; 
+                textoIntermediarioDiv.style.fontWeight = "500";
+                textoIntermediarioDiv.style.marginBottom = "6px";
+                contentDiv.appendChild(textoIntermediarioDiv);
+                contentDiv.scrollTop = contentDiv.scrollHeight;
+            } else if (contentDiv) {
+                contentDiv.innerText = transcriptAtual;
+            }
+        });
 
         if (timeoutVerificacao) clearTimeout(timeoutVerificacao);
 
@@ -176,9 +245,24 @@ function iniciarReconhecimentoComTraducao(lang, fromLang, toLang) {
             const palavrasNovas = contarPalavrasDiferentes(ultimoTextoCapturado, transcriptAtual);
 
             if (palavrasNovas >= MIN_PALAVRAS) {
-                const traducao = await traduzirTexto(transcriptAtual, fromLang, toLang);
-                atualizarTextoFinal(traducao);
-                ultimoTextoCapturado = transcriptAtual;
+                chrome.storage.sync.get(['historyMode'], async (result) => {
+                    const historyEnabled = result.historyMode;
+                    const traducao = await traduzirTexto(transcriptAtual, fromLang, toLang);
+
+                    if (historyEnabled) {
+                        appendTextoTraduzido(transcriptAtual, traducao);
+                        textoIntermediarioDiv = null;
+
+                        ultimoTextoCapturado = "";
+                        transcriptAtual = "";
+                    } else {
+                        currentFinalTextForPage = traducao;
+                        const contentDiv = document.getElementById("conteudoLegenda");
+                        if (contentDiv) {
+                            contentDiv.innerText = currentFinalTextForPage;
+                        }
+                    }
+                });
             }
         }, INTERVALO_ANALISE);
     };
@@ -190,6 +274,30 @@ function iniciarReconhecimentoComTraducao(lang, fromLang, toLang) {
 
     recognition.start();
 }
+
+function appendTextoTraduzido(original, traduzido) {
+    const contentDiv = document.getElementById("conteudoLegenda");
+    if (!contentDiv) return;
+
+    const bloco = document.createElement("div");
+    bloco.style.marginBottom = "12px";
+
+    const originalDiv = document.createElement("div");
+    originalDiv.innerText = String(original).trim();
+    originalDiv.style.color = "#03A9F4";
+    originalDiv.style.marginBottom = "4px";
+
+    const traduzidoDiv = document.createElement("div");
+    traduzidoDiv.innerText = String(traduzido).trim();
+    traduzidoDiv.style.color = "#fff";
+
+    bloco.appendChild(originalDiv);
+    bloco.appendChild(traduzidoDiv);
+    contentDiv.appendChild(bloco);
+
+    contentDiv.scrollTop = contentDiv.scrollHeight;
+}
+
 
 function contarPalavrasDiferentes(texto1, texto2) {
     const palavras1 = texto1.split(/\s+/);
