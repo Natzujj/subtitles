@@ -15,19 +15,27 @@
     <button id="translation">Translation</button>
     <button id="stop">Stop</button>
 
-    <div class="config-container">
-        <button id="toggleConfig"></button>
-        <select id="langSelect" class="hidden">
-            <option value="en-US">English (US)</option>
-            <option value="fr-FR">French (FR)</option>
-            <option value="pt-BR">Portuguese (BR)</option>
-            <option value="es-ES">Spanish (ES)</option>
-        </select>
-        <label>
-            <input type="checkbox" id="toggleHistory"/>
-            Histórico
-        </label>
+    <div class="config-wrapper">
+        <button id="toggleConfig" title="Configurações"></button>
+
+        <div id="configPanel" class="hidden config-panel">
+            <label class="config-option">
+                <span>Idioma:</span>
+                <select id="langSelect">
+                    <option value="pt-BR">Portuguese (BR)</option>
+                    <option value="en-US">English (US)</option>
+                    <option value="fr-FR">French (FR)</option>
+                    <option value="es-ES">Spanish (ES)</option>
+                </select>
+            </label>
+
+            <label class="config-option checkbox-label">
+                <input type="checkbox" id="toggleHistory" />
+                <span>Ativar histórico</span>
+            </label>
+        </div>
     </div>
+
 
     <script src="popup.js"></script>
 </body>

@@ -54,9 +54,10 @@ document.getElementById("stop").addEventListener("click", () => {
 });
 
 document.getElementById("toggleConfig").addEventListener("click", () => {
-  const select = document.getElementById("langSelect");
-  select.classList.toggle("hidden");
+  const panel = document.getElementById("configPanel");
+  panel.classList.toggle("hidden");
 });
+
 
 document.getElementById("toggleHistory").addEventListener("change", (e) => {
   const isEnabled = e.target.checked;

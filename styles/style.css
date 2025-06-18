@@ -21,7 +21,7 @@ body {
     padding: 20px;
     width: 250px;
     color: #2c3e50;
-    position: relative; /* Para ser referência para o .config-container */
+    position: relative; 
     font-family: 'Poppins', sans-serif;
 }
 
@@ -93,40 +93,73 @@ button:active {
     z-index: 10;
 }
 
-#toggleConfig {
-    border: 1px solid #d1d1d1;
-    border-radius: 50%;
-    padding: 10px;
-    width: 20px;
-    height: 20px;
-    font-size: 18px;
-    background-image: url('/icons/gear.png');
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 15px 15px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-#toggleConfig:hover {
-    background-color: #eaeaea;
-}
-
-#langSelect {
-    padding: 8px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    position: absolute;
-    top: 10px;
-    left: 20px;
-}
 
 .hidden {
     display: none;
+}
+
+.config-wrapper {
+  position: absolute;
+  top: -10px;    
+  left: 0px;      
+  z-index: 10;  
+}
+
+#toggleConfig {
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  background-image: url('/icons/gear.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 18px 18px;
+  cursor: pointer;
+  background-color: transparent;
+  transition: background-color 0.2s ease;
+}
+
+#toggleConfig:hover {
+  background-color: #e0e0e0;
+}
+
+.config-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 12px;
+  width: 200px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 100;
+}
+
+.config-option {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: #333;
+}
+
+.config-option select {
+  margin-top: 6px;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.checkbox-label {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #3f51b5;
 }

@@ -306,70 +306,90 @@ function criarCaixaHistorico() {
     legendaDiv.style.position = "fixed";
     legendaDiv.style.top = "10%";
     legendaDiv.style.left = "10%";
-    legendaDiv.style.width = "400px";
-    legendaDiv.style.height = "300px";
-    legendaDiv.style.background = "rgba(0, 0, 0, 0.6)";
-    legendaDiv.style.color = "#fff";
-    legendaDiv.style.borderRadius = "8px";
+    legendaDiv.style.width = "420px";
+    legendaDiv.style.height = "320px";
+    legendaDiv.style.background = "#121212"; // fundo escuro puro pra contraste forte
+    legendaDiv.style.color = "#e0e0e0"; // texto clarinho para legibilidade
+    legendaDiv.style.borderRadius = "12px";
     legendaDiv.style.zIndex = "9999";
     legendaDiv.style.resize = "both";
-    legendaDiv.style.overflow = "hidden"; 
+    legendaDiv.style.overflow = "hidden";
     legendaDiv.style.display = "flex";
-    legendaDiv.style.flexDirection = "column"; 
-    legendaDiv.style.boxSizing = "border-box";
+    legendaDiv.style.flexDirection = "column";
+    legendaDiv.style.boxShadow = "0 8px 24px rgba(0,0,0,0.6)"; // sombra mais elegante
+    legendaDiv.style.fontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+    legendaDiv.style.userSelect = "text"; // permite selecionar o texto dentro do histórico
 
     // HEADER
     const header = document.createElement("div");
-    header.style.background = "rgba(0, 0, 0, 0.8)";
-    header.style.padding = "8px 12px";
+    header.style.background = "linear-gradient(90deg, #3f51b5, #5a67d8)"; // degradê azul moderno
+    header.style.padding = "10px 16px";
     header.style.cursor = "grab";
     header.style.display = "flex";
     header.style.justifyContent = "space-between";
     header.style.alignItems = "center";
-    header.style.flexShrink = "0"; 
+    header.style.flexShrink = "0";
     header.style.userSelect = "none";
+    header.style.borderTopLeftRadius = "12px";
+    header.style.borderTopRightRadius = "12px";
+    header.style.boxShadow = "0 2px 8px rgba(0,0,0,0.3)";
 
     const title = document.createElement("span");
     title.innerText = "Histórico de Legendas";
+    title.style.fontWeight = "700";
+    title.style.fontSize = "16px";
+    title.style.color = "#fff";
+    title.style.userSelect = "none";
 
-    const closeBtn = document.createElement("button");
-    closeBtn.innerText = "X";
-    closeBtn.style.background = "transparent";
-    closeBtn.style.border = "none";
-    closeBtn.style.color = "white";
-    closeBtn.style.fontWeight = "bold";
-    closeBtn.style.cursor = "pointer";
-    closeBtn.onclick = () => removerLegenda();
+    // Botões estilizados, menores e com hover mais suave
+    function styleButton(btn) {
+        btn.style.background = "transparent";
+        btn.style.border = "none";
+        btn.style.color = "white";
+        btn.style.fontWeight = "700";
+        btn.style.cursor = "pointer";
+        btn.style.marginLeft = "8px";
+        btn.style.fontSize = "18px";
+        btn.style.transition = "color 0.2s ease";
+        btn.onmouseover = () => (btn.style.color = "#ffcc00");
+        btn.onmouseout = () => (btn.style.color = "white");
+    }
 
     const clearBtn = document.createElement("button");
     clearBtn.innerText = "🧹";
     clearBtn.title = "Limpar histórico";
-    clearBtn.style.background = "transparent";
-    clearBtn.style.border = "none";
-    clearBtn.style.color = "white";
-    clearBtn.style.fontWeight = "bold";
-    clearBtn.style.cursor = "pointer";
+    styleButton(clearBtn);
     clearBtn.onclick = () => limparHistorico();
 
-    
-    
+    const closeBtn = document.createElement("button");
+    closeBtn.innerText = "✕";
+    closeBtn.title = "Fechar";
+    styleButton(closeBtn);
+    closeBtn.onclick = () => removerLegenda();
+
     header.appendChild(title);
-    header.appendChild(clearBtn);
-    header.appendChild(closeBtn);
+    // agrupando botões para alinhar melhor no header
+    const btnGroup = document.createElement("div");
+    btnGroup.style.display = "flex";
+    btnGroup.appendChild(clearBtn);
+    btnGroup.appendChild(closeBtn);
+
+    header.appendChild(btnGroup);
 
     // CONTEÚDO
     const content = document.createElement("div");
     content.id = "conteudoLegenda";
-    content.style.padding = "10px";
+    content.style.padding = "14px";
     content.style.overflowY = "auto";
     content.style.flexGrow = "1";
-    content.style.cursor = "default";
+    content.style.cursor = "text";
+    content.style.fontSize = "14px";
+    content.style.lineHeight = "1.4";
+    content.style.whiteSpace = "pre-wrap"; // mantém quebras de linha
 
     legendaDiv.appendChild(header);
     legendaDiv.appendChild(content);
     document.body.appendChild(legendaDiv);
 
-    header.addEventListener('mousedown', onDragMouseDown);
+    header.addEventListener("mousedown", onDragMouseDown);
 }
-
-
