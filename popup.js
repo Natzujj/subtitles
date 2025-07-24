@@ -1,3 +1,15 @@
+document.addEventListener("DOMContentLoaded", () => {
+  chrome.storage.sync.get(["selectedLang", "historyMode"], (result) => {
+    if (result.selectedLang) {
+      document.getElementById("langSelect").value = result.selectedLang;
+    }
+
+    if (typeof result.historyMode === "boolean") {
+      document.getElementById("toggleHistory").checked = result.historyMode;
+    }
+  });
+});
+
 document.getElementById("onlySubtitles").addEventListener("click", () => {
   const lang = document.getElementById("langSelect").value;
 
@@ -18,8 +30,8 @@ document.getElementById("onlySubtitles").addEventListener("click", () => {
 
 document.getElementById("translation").addEventListener("click", () => {
   const lang = document.getElementById("langSelect").value;
-  const fromLang = lang.split("-")[0]; 
-  const toLang = "pt"; 
+  const fromLang = lang.split("-")[0];
+  const toLang = "pt";
 
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     if (tabs && tabs.length > 0 && tabs[0].id) {
@@ -58,10 +70,15 @@ document.getElementById("toggleConfig").addEventListener("click", () => {
   panel.classList.toggle("hidden");
 });
 
+document.getElementById("langSelect").addEventListener("change", (e) => {
+  const lang = e.target.value;
+  chrome.storage.sync.set({ selectedLang: lang }, () => {
+    console.log("Idioma salvo:", lang);
+  });
+});
 
 document.getElementById("toggleHistory").addEventListener("change", (e) => {
   const isEnabled = e.target.checked;
-
   chrome.storage.sync.set({ historyMode: isEnabled }, () => {
     console.log("Histórico ativado?", isEnabled);
   });
