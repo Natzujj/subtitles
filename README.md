@@ -1,6 +1,6 @@
 ![Project Banner](./Banner.png)
 
-## 🇺🇸 [Read this in Portuguese](./README.pt-br.md)
+## 🇺🇸 [Read this in Portuguese](./README.pt_br.md)
 
 # Close Captioner
 

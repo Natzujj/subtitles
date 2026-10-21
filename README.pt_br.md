@@ -1,5 +1,7 @@
 ![Banner do projeto](./Banner.png)
 
+## PT-BR [Read this in English](./README.md)
+
 # Close Captioner
 
 **Uma extensão leve e 100% offline para gerar legendas em tempo real do áudio de qualquer aba do Chrome, utilizando reconhecimento de voz local (Vosk/WASM).**
