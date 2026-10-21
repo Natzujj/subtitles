@@ -1,0 +1,4 @@
+Copie para esta pasta os mesmos arquivos de fonte do seu projeto anterior:
+  Michroma-Regular.woff2
+  poppins-light.woff2
+Sem eles a interface usa a fonte sans-serif padrão do sistema.

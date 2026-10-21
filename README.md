@@ -2,118 +2,97 @@
 
 ## 🇺🇸 [Read this in Portuguese](./README.pt-br.md)
 
-# 🎙️ Close Captioner 🎙️
+# Close Captioner
 
-**A simple browser extension for real-time speech recognition subtitles — perfect for videos, language learning, livestreams, and more.**
+**A lightweight and 100% offline extension to generate real-time subtitles from any Chrome tab's audio using local speech recognition (Vosk/WASM).**
 
 ---
 
 ## Why does this project exist?
 
-While learning new languages, I noticed the **lack of a lightweight, functional tool for generating live subtitles**, especially for videos and livestreams that don't offer captions.
+While watching videos and live streams without native subtitles, I noticed the lack of a **simple, free tool that works 100% offline without crashing the browser**.
 
-**I couldn’t find a simple, free, and reliable solution for this specific use case**, so I created this extension to:
-
-- Capture system audio (or microphone input)  
-- Transcribe it in real time using speech recognition  
-- Display subtitles directly on screen  
-- Optionally offer automatic translation  
+This extension was built to solve this issue by featuring:
+- **Direct tab audio capture**
+- **100% local processing** via Vosk and WebAssembly (WASM), ensuring privacy without relying on paid APIs.
+- **Multi-language support** with dynamic switching directly from the popup.
+- **Low resource consumption**, optimized to run smoothly on Chrome tabs.
 
 ---
 
 ## Technologies Used
 
-- **HTML + CSS + JavaScript** — Lightweight extension built with plain Vanilla JS  
-- **Web Speech API** — Native in Chromium browsers for speech recognition  
-- **VB-CABLE** — Routes system audio as microphone input  
+- **HTML5 + CSS3 + Vanilla JavaScript**: Lightweight extension built with pure code.
+- **Chrome Extensions Manifest V3**: Using `chrome.tabCapture` and `offscreen` documents to capture clean audio from the tab.
+- **Vosk / WASM**: Offline speech recognition engine running inside Web Workers.
+- **PowerShell**: Automation for packaging and managing language models.
 
 ---
 
-## 🖥️ Requirements 🖥️
+## Installation & Setup (Windows)
 
-### 1. Capture System Audio
+Since the extension runs locally optimized AI models, you will need to download Vosk language files and package them using the included utility script.
 
-By default, browsers can only access **microphones**, not system audio. To work around this:
+### 1. Download Vosk Models
+Go to the official [Alphacephei - Vosk Models](https://alphacephei.com/vosk/models) page and download the compact `small` models (recommended for extensions as they are lightweight and prevent memory crashes):
+- Ex.: `vosk-model-small-pt-0.3.zip` (Portuguese)
+- Ex.: `vosk-model-small-en-us-0.15.zip` (English)
 
-- Install [VB-CABLE](https://vb-audio.com/Cable/)
+### 2. Package Models using the Script
+For each downloaded `.zip` file, open **PowerShell** from the extension's root directory and run the automation script (`tools\pack-model.ps1`):
 
-This driver creates a **virtual microphone**. Here's how it works:
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\pack-model.ps1 "$env:USERPROFILE\Downloads\vosk-model-small-pt-0.3.zip"
+```
 
-1. System audio (e.g., video or livestream sound) is redirected into this virtual mic  
-2. The browser listens to the mic and generates subtitles  
+- **How it works:** The script extracts the model, validates its structure, compresses it into the format expected by `vosk-browser` (`model\<language>.tar.gz`), and automatically updates `model\languages.json` with the list displayed in the extension selector.
+- *Tip:* To set a custom language code, pass it as the second argument (e.g., `... pack-model.ps1 model.zip pt-br`).
+
+### 3. Install the Extension in Chrome
+1. Go to `chrome://extensions/`
+2. Enable **Developer mode** (top right corner).
+3. Click **"Load unpacked"** and select the project directory.
 
 ---
 
 ## How to Use
 
-### 1. Install [VB-CABLE](https://vb-audio.com/Cable/)
+1. Open the browser tab with the video or live stream you want to subtitle.
+2. Click the extension icon in the Chrome popup.
+3. Choose your desired **language** from the selector.
+4. Click **Start in this tab**.
 
-- Run the installer  
-- Go to your **Sound Settings** and set:  
-  - Default output: `VB-Cable Input`  
-  - Default input: `VB-Cable Output`
-
-This reroutes system audio as microphone input.
-
----
-
-### 2. Install the Extension in Chrome (Developer Mode)
-
-1. Go to `chrome://extensions/`  
-2. Enable **Developer Mode** (top-right corner)  
-3. Click **“Load unpacked”**  
-4. Select the project folder  
-
----
-
-### 3. Use the Extension
-
-- Open the extension popup  
-- Choose the input language  
-- Click:  
-  - `Only Subtitles` — Only transcribes audio  
-  - `Translate` — Transcribes and translates  
-  - `Stop` — Stops listening  
-
----
-
-## Supported Languages
-
-- 🇺🇸 English (`en-US`)  
-- 🇫🇷 French (`fr-FR`)  
-- 🇧🇷 Portuguese (`pt-BR`)  
-- 🇪🇸 Spanish (`es-ES`)
-
-You can easily add more languages by editing the `<select>` element in `popup.html`.
-
----
-
-## Use Cases
-
-- Watch foreign videos without subtitles  
-- Practice listening comprehension while studying languages  
-- Add real-time subtitles to **livestreams** or **online classes**  
-- Improve accessibility for users with hearing impairments  
+*Note:* Changing the language while capture is active instantly restarts the subtitles on the same tab. Only one model remains active in memory at a time to save resources.
 
 ---
 
 ## Project Structure
 
 ```plaintext
-subtitles-extension/
-├── popup.html        # Popup interface
-├── popup.js          # Speech recognition and translation logic
-├── icon.png          # Extension icon
-├── manifest.json     # Chrome extension manifest
+legendas-vosk/
+├── manifest.json         # Extension Manifest (MV3)
+├── background.js         # Orchestrates capture, relays subtitles, and history
+├── offscreen.*           # Offscreen document for audio processing
+├── audio-worklet.js      # Captures the tab's audio stream
+├── lib/
+│   ├── vosk.js           # Vosk engine adapted for the extension
+│   └── vosk-worker.js    # AI Worker running in background
+├── content.js            # Injected subtitle overlay on screen
+├── conversation.*        # Conversation mode / history
+├── popup.* + style.css   # User interface (language selector, settings)
+└── tools/
+    └── pack-model.ps1    # PowerShell utility script for model packaging
 ```
 
 ---
 
-## Limitations
+## Supported Languages
 
-- Depends on the Web Speech API for speech recognition (may have occasional misinterpretations)
-- Translation uses built-in browser features `SpeechRecognition.lang, Intl` — no external APIs
-- Does **not** record audio — only transcribes and displays subtitles
-- Chrome is the recommended browser
+The extension supports any official Vosk language model that you package inside the `model\` folder, with automatic management via `languages.json` (including Portuguese, English, Spanish, French, German, Japanese, among others).
 
 ---
+
+## Known Limitations
+
+- Recognition accuracy depends on Vosk's *small* models (great for general speech, but may require attention with proper nouns or highly specific jargon).
+- Requires Google Chrome or Chromium-based browsers compatible with Manifest V3 architecture.

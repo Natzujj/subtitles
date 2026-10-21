@@ -1,43 +1,33 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Subtitles</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="styles/style.css">
+<!doctype html>
+<html lang="pt-BR"><head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="style.css">
 </head>
-
-<body>
-    <h3>Close Captioner</h3>
-    <button id="onlySubtitles">Add Subtitles</button>
-    <button id="translation">Translation</button>
-    <button id="stop">Stop</button>
-
-    <div class="config-wrapper">
-        <button id="toggleConfig" title="Configurações"></button>
-
-        <div id="configPanel" class="hidden config-panel">
-            <label class="config-option">
-                <span>Language:</span>
-                <select id="langSelect">
-                    <option value="pt-BR">Portuguese (BR)</option>
-                    <option value="en-US">English (US)</option>
-                    <option value="fr-FR">French (FR)</option>
-                    <option value="es-ES">Spanish (ES)</option>
-                </select>
-            </label>
-
-            <label class="config-option checkbox-label">
-                <input type="checkbox" id="toggleHistory" />
-                <span>Enable History</span>
-            </label>
-        </div>
+<body class="popup">
+  <div class="config-wrapper">
+    <button id="toggleConfig" title="Configurações"></button>
+    <div id="configPanel" class="config-panel hidden">
+      <label class="config-option checkbox-label">
+        <input type="checkbox" id="overlay"><span>Legenda na tela</span>
+      </label>
+      <label class="config-option">
+        <span>Tamanho da legenda</span>
+        <input type="range" id="size" min="16" max="60" step="2">
+      </label>
     </div>
+  </div>
 
+  <h3>Legendas ao Vivo</h3>
 
-    <script src="popup.js"></script>
-</body>
+  <div class="config-option">
+    <label for="lang">Idioma da legenda</label>
+    <select id="lang"></select>
+  </div>
 
-</html>
+  <div id="status" class="status">…</div>
+  <div id="hint" class="hint hidden"></div>
+
+  <button id="toggle">Iniciar nesta aba</button>
+  <button id="conv" class="btn-teal">Abrir modo conversa</button>
+  <script src="popup.js"></script>
+</body></html>
